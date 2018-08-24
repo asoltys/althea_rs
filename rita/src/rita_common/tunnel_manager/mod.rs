@@ -671,7 +671,7 @@ impl Handler<TunnelStateChange> for TunnelManager {
                                     // TODO make this real after testing
                                     trace!("Fake removing {:?} from peers", msg.identity);
                                     //tunnel.unmonitor(make_babel_stream()?)?;
-                                    //tunnel.state = TunnelState::NotRegistered;
+                                    tunnel.state = TunnelState::NotRegistered;
                                 }
                                 TunnelState::NotRegistered => {
                                     info!("Tunnel {:?} already in not registered state.", tunnel);
