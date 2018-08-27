@@ -53,6 +53,22 @@ impl Handler<PaymentReceived> for PaymentController {
     }
 }
 
+#[derive(Message)]
+pub struct FreeMoney(pub Int256);
+
+impl Handler<FreeMoney> for PaymentController {
+    type Result = ();
+
+    fn handle(&mut self, msg: FreeMoney, _: &mut Context<Self>) -> Self::Result {
+        match self.free_money(msg.0) {
+            Ok(()) => {}
+            Err(err) => {
+                warn!("got error from free money: {:?}", err);
+            }
+        }
+    }
+}
+
 #[derive(Message, Clone)]
 pub struct MakePayment(pub PaymentTx);
 
@@ -267,6 +283,13 @@ impl PaymentController {
                 )),
             )))
         }
+    }
+
+    pub fn free_money(&mut self, amount: Int256) -> Result<(), Error> {
+        trace!("FREE MONEY! current balance: {:?}", self.balance);
+        self.balance = self.balance.clone() + amount;
+        trace!("current balance: {:?}", self.balance);
+        Ok(())
     }
 }
 

@@ -1,5 +1,4 @@
 use actix::registry::SystemService;
-use rita_common::debt_keeper::GetDebtsList;
 
 use althea_types::EthAddress;
 
@@ -17,8 +16,10 @@ use SETTING;
 use super::{Dashboard, GetOwnInfo, OwnInfo};
 use actix_web::*;
 
-use rita_common::debt_keeper::{DebtKeeper, GetDebtsResult};
+use rita_common::debt_keeper::{DebtKeeper, GetDebtsResult, GetDebtsList};
+use rita_common::payment_controller::{PaymentController, FreeMoney};
 use rita_common::network_endpoints::JsonStatusResponse;
+use num256::Int256;
 
 pub fn get_own_info(_req: HttpRequest) -> Box<Future<Item = Json<OwnInfo>, Error = Error>> {
     debug!("Get own info endpoint hit!");
@@ -149,3 +150,15 @@ pub fn remove_from_dao_list(path: Path<(EthAddress)>) -> Result<Json<()>, Error>
     }
     Ok(Json(()))
 }
+
+pub fn free_money(
+    amount: (Json<Int256>, HttpRequest),
+) -> Box<Future<Item = HttpResponse, Error = Error>> {
+    trace!("Free money hit: {:?}", amount.0);
+    PaymentController::from_registry()
+        .send(FreeMoney(amount.0.clone()))
+        .from_err()
+        .and_then(|_| Ok(HttpResponse::Ok().into()))
+        .responder()
+}
+

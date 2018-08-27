@@ -228,6 +228,7 @@ fn main() {
             .route("/version", Method::GET, version)
             .route("/wipe", Method::POST, wipe)
             .route("/debts", Method::GET, get_debts)
+            .route("/free_money/{amount}", Method::POST, free_money)
             .route("/dao_list", Method::GET, get_dao_list)
             .route("/dao_list/add/{address}", Method::POST, add_to_dao_list)
             .route(
