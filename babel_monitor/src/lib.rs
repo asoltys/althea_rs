@@ -51,6 +51,24 @@ fn find_babel_val(val: &str, line: &str) -> Result<String, Error> {
     return Err(VariableNotFound(String::from(val), String::from(line)).into());
 }
 
+/* not working..
+fn parse_route_val(val: &str, line: &str) -> Result<String, Error> {
+    match find_babel_val(val, line) {
+        Ok(val) => match val.parse() {
+            Ok(val) => Ok(val),
+            Err(e) => {
+                error!("Error parsing route value {}: {}", val, e);
+                Err(e);
+            }
+        },
+        Err(e) => {
+            error!("Error finding route value {}: {}", val, e);
+            Err(e);
+        }
+    }
+}
+*/
+
 #[derive(Debug, Clone)]
 pub struct Route {
     pub id: String,
@@ -189,15 +207,84 @@ impl<T: Read + Write> Babel<T> {
         for entry in self.command("dump")?.split("\n") {
             if entry.contains("add neighbour") {
                 vector.push_back(Neighbor {
-                    id: find_babel_val("neighbour", entry)?,
-                    address: find_babel_val("address", entry)?.parse()?,
-                    iface: find_babel_val("if", entry)?,
-                    reach: u16::from_str_radix(&find_babel_val("reach", entry)?, 16)?,
-                    txcost: find_babel_val("txcost", entry)?.parse()?,
-                    rxcost: find_babel_val("rxcost", entry)?.parse()?,
+                    id: match find_babel_val("id", entry) {
+                        Ok(id) => id,
+                        Err(e) => {
+                            error!("Error parsing id: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    address: match find_babel_val("address", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing address: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding address: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    iface: match find_babel_val("if", entry) {
+                        Ok(iface) => iface,
+                        Err(e) => {
+                            error!("Error parsing iface: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    reach: u16::from_str_radix(
+                        &match find_babel_val("reach", entry) {
+                            Ok(reach) => reach,
+                            Err(e) => {
+                                error!("Error parsing reach: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        16,
+                    )?,
+                    txcost: match find_babel_val("txcost", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing txcost: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding txcost: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    rxcost: match find_babel_val("rxcost", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing rxcost: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding rxcost: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
                     rtt: 0.0,
                     rttcost: 0,
-                    cost: find_babel_val("cost", entry)?.parse()?,
+                    cost: match find_babel_val("cost", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing cost: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding cost: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
                 });
             }
         }
@@ -213,17 +300,120 @@ impl<T: Read + Write> Babel<T> {
             if entry.contains("add route") {
                 trace!("Parsing 'add route' entry: {}", entry);
                 vector.push_back(Route {
-                    id: find_babel_val("route", entry)?,
-                    iface: find_babel_val("if", entry)?,
+                    id: match find_babel_val("route", entry) {
+                        Ok(route) => route,
+                        Err(e) => {
+                            error!("Error parsing route: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    iface: match find_babel_val("if", entry) {
+                        Ok(iface) => iface,
+                        Err(e) => {
+                            error!("Error parsing iface: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
                     xroute: false,
-                    installed: find_babel_val("installed", entry)?.contains("yes"),
-                    neigh_ip: find_babel_val("via", entry)?.parse()?,
-                    prefix: find_babel_val("prefix", entry)?.parse()?,
-                    metric: find_babel_val("metric", entry)?.parse()?,
-                    refmetric: find_babel_val("refmetric", entry)?.parse()?,
-                    full_path_rtt: { find_babel_val("full-path-rtt", entry)?.parse()? },
-                    price: find_babel_val("price", entry)?.parse()?,
-                    fee: find_babel_val("fee", entry)?.parse()?,
+                    installed: match find_babel_val("installed", entry) {
+                        Ok(installed) => installed.contains("yes"),
+                        Err(e) => {
+                            error!("Error parsing installed: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    // neigh_ip: find_babel_val("via", entry)?.parse()?,
+                    neigh_ip: match find_babel_val("via", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing neighbor ip: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding neigh_ip: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    prefix: match find_babel_val("prefix", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing prefix: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding prefix: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    metric: match find_babel_val("metric", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing metric: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding metric: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    refmetric: match find_babel_val("refmetric", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing refmetric: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding refmetric: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    full_path_rtt: match find_babel_val("full_path_rtt", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing full_path_rtt: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding full_path_rtt: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    price: match find_babel_val("price", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing price: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding price: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
+                    fee: match find_babel_val("fee", entry) {
+                        Ok(val) => match val.parse() {
+                            Ok(res) => res,
+                            Err(e) => {
+                                error!("Error parsing fee: {}", e);
+                                return Err(format_err!("{}", e));
+                            }
+                        },
+                        Err(e) => {
+                            error!("Error finding fee: {}", e);
+                            return Err(format_err!("{}", e));
+                        }
+                    },
                 });
             }
         }
