@@ -45,6 +45,7 @@ mod middleware;
 mod rita_common;
 mod rita_exit;
 
+use crate::rita_common::dashboard::auth::*;
 use crate::rita_common::dashboard::babel::*;
 use crate::rita_common::dashboard::dao::*;
 use crate::rita_common::dashboard::debts::*;
@@ -232,6 +233,7 @@ fn main() {
     server::new(|| {
         App::new()
             .middleware(middleware::Headers)
+            .middleware(middleware::Auth)
             // assuming exit nodes dont need wifi
             //.resource("/wifisettings", |r| r.route().filter(pred::Get()).h(get_wifi_config))
             //.resource("/wifisettings", |r| r.route().filter(pred::Post()).h(set_wifi_config))
@@ -262,6 +264,7 @@ fn main() {
             .route("/auto_price/enabled", Method::GET, auto_pricing_status)
             .route("/nickname/get/", Method::GET, get_nickname)
             .route("/nickname/set/", Method::POST, set_nickname)
+            .route("/router/password/", Method::POST, set_pass)
             .route("/crash_actors", Method::POST, crash_actors)
             .route("/usage/payments", Method::GET, get_payments)
     })
