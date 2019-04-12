@@ -299,9 +299,9 @@ fn main() {
                 Method::POST,
                 set_system_blockchain,
             )
-            .route("/blockchain/get/", Method::GET, get_system_blockchain)
-            .route("/nickname/get/", Method::GET, get_nickname)
-            .route("/nickname/set/", Method::POST, set_nickname)
+            .route("/blockchain/get", Method::GET, get_system_blockchain)
+            .route("/nickname/get", Method::GET, get_nickname)
+            .route("/nickname/set", Method::POST, set_nickname)
             .route(
                 "/low_balance_notification",
                 Method::GET,
@@ -316,7 +316,7 @@ fn main() {
             .route("/usage/client", Method::GET, get_client_usage)
             .route("/usage/payments", Method::GET, get_payments)
             .route("/router/update", Method::POST, update_router)
-            .route("/router/password/", Method::POST, set_pass)
+            .route("/router/password", Method::POST, set_pass)
             .route("/wipe", Method::POST, wipe)
             .route("/crash_actors", Method::POST, crash_actors)
     })
