@@ -1179,7 +1179,7 @@ Sets the blockchain being used by the router, either 'Ethereum','Rinkeby' or 'Xd
 
 Sets the blockchain being used by the router
 
-- URL: `<rita ip>:<rita_dashboard_port>/blockchain/get/`
+- URL: `<rita ip>:<rita_dashboard_port>/blockchain/get`
 - Method: `GET`
 - URL Params: `None`
 - Data Params: `None`
@@ -1195,7 +1195,7 @@ Sets the blockchain being used by the router
 
 - Sample Call:
 
-`curl http://192.168.10.1:4877/blockchain/get/`
+`curl http://192.168.10.1:4877/blockchain/get`
 
 ---
 
@@ -1204,7 +1204,7 @@ Sets the blockchain being used by the router
 Sets the optional nickname parameter for the router. Will error if the nickname
 is longer than 32 chars when utf-8 encoded (not always 32 assci chars)
 
-- URL: `<rita ip>:<rita_dashboard_port>/nickname/set/`
+- URL: `<rita ip>:<rita_dashboard_port>/nickname/set`
 - Method: `POST`
 - URL Params: `None`
 - Data Params: `None`

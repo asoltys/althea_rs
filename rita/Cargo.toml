@@ -26,8 +26,8 @@ web3 = {git = "https://github.com/althea-mesh/guac_rs"}
 syslog = "4"
 actix = "0.7"
 actix-web = { version = "0.7", default_features = false, features= ["ssl"] }
-actix_derive = "0.4"
 actix-web-httpauth = {git = "https://github.com/jkilpatr/actix-web-httpauth"}
+actix_derive = "0.4"
 bytes = "0.4"
 config = "0.9"
 diesel = { version = "1.4", features = ["postgres"] }
@@ -64,6 +64,7 @@ lettre = {git="https://github.com/lettre/lettre.git"}
 lettre_email = {git="https://github.com/lettre/lettre.git"}
 phonenumber = "0.2"
 sha3 = "0.8"
+hex-literal = "0.2"
 
 [features]
 default = []
