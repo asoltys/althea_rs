@@ -22,27 +22,10 @@ extern crate log;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
-
 #[cfg(test)]
 #[macro_use]
 extern crate hex_literal;
-
 extern crate phonenumber;
-
-use env_logger;
-
-use openssl_probe;
-
-use settings::exit::{RitaExitSettings, RitaExitSettingsStruct};
-use settings::RitaCommonSettings;
-
-use docopt::Docopt;
-#[cfg(not(test))]
-use settings::FileWrite;
-
-use actix::registry::SystemService;
-use actix_web::http::Method;
-use actix_web::{http, server, App};
 
 pub mod actix_utils;
 mod middleware;
@@ -60,14 +43,21 @@ use crate::rita_common::dashboard::pricing::*;
 use crate::rita_common::dashboard::settings::*;
 use crate::rita_common::dashboard::usage::*;
 use crate::rita_common::dashboard::wallet::*;
-
 use crate::rita_common::network_endpoints::*;
 use crate::rita_exit::network_endpoints::*;
-
-use std::sync::{Arc, RwLock};
-
+use actix::registry::SystemService;
+use actix_web::http::Method;
+use actix_web::{http, server, App};
+use docopt::Docopt;
+use env_logger;
+use openssl_probe;
+use settings::exit::{RitaExitSettings, RitaExitSettingsStruct};
+#[cfg(not(test))]
+use settings::FileWrite;
+use settings::RitaCommonSettings;
 #[cfg(test)]
 use std::sync::Mutex;
+use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Deserialize, Default)]
 pub struct Args {

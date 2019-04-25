@@ -18,34 +18,10 @@ extern crate lazy_static;
 extern crate log;
 #[macro_use]
 extern crate serde_derive;
-
 #[cfg(test)]
 #[macro_use]
 extern crate hex_literal;
-
 extern crate arrayvec;
-
-use env_logger;
-
-use std::env;
-
-use openssl_probe;
-
-use docopt::Docopt;
-#[cfg(not(test))]
-use settings::FileWrite;
-
-use settings::client::{RitaClientSettings, RitaSettingsStruct};
-use settings::RitaCommonSettings;
-
-use actix::registry::SystemService;
-use actix_web::http::Method;
-use actix_web::{http, server, App};
-
-use std::sync::{Arc, RwLock};
-
-#[cfg(test)]
-use std::sync::Mutex;
 
 pub mod actix_utils;
 mod middleware;
@@ -63,7 +39,6 @@ use crate::rita_client::dashboard::system_chain::*;
 use crate::rita_client::dashboard::update::*;
 use crate::rita_client::dashboard::usage::*;
 use crate::rita_client::dashboard::wifi::*;
-
 use crate::rita_common::dashboard::auth::*;
 use crate::rita_common::dashboard::babel::*;
 use crate::rita_common::dashboard::dao::*;
@@ -75,8 +50,21 @@ use crate::rita_common::dashboard::pricing::*;
 use crate::rita_common::dashboard::settings::*;
 use crate::rita_common::dashboard::usage::*;
 use crate::rita_common::dashboard::wallet::*;
-
 use crate::rita_common::network_endpoints::*;
+use actix::registry::SystemService;
+use actix_web::http::Method;
+use actix_web::{http, server, App};
+use docopt::Docopt;
+use env_logger;
+use openssl_probe;
+use settings::client::{RitaClientSettings, RitaSettingsStruct};
+#[cfg(not(test))]
+use settings::FileWrite;
+use settings::RitaCommonSettings;
+use std::env;
+#[cfg(test)]
+use std::sync::Mutex;
+use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Deserialize, Default)]
 pub struct Args {
