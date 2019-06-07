@@ -22,7 +22,9 @@ extern crate log;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
-
+#[cfg(test)]
+#[macro_use]
+extern crate hex_literal;
 extern crate phonenumber;
 
 use actix_web::http::Method;
@@ -43,6 +45,7 @@ use settings::RitaCommonSettings;
 #[cfg(not(test))]
 use settings::FileWrite;
 
+pub mod actix_utils;
 mod middleware;
 mod rita_common;
 mod rita_exit;
@@ -53,6 +56,7 @@ use rita_common::rita_loop::start_core_rita_endpoints;
 use rita_exit::rita_loop::check_rita_exit_actors;
 use rita_exit::rita_loop::start_rita_exit_endpoints;
 
+use crate::rita_common::dashboard::auth::*;
 use crate::rita_common::dashboard::babel::*;
 use crate::rita_common::dashboard::dao::*;
 use crate::rita_common::dashboard::debts::*;
@@ -63,12 +67,21 @@ use crate::rita_common::dashboard::pricing::*;
 use crate::rita_common::dashboard::settings::*;
 use crate::rita_common::dashboard::usage::*;
 use crate::rita_common::dashboard::wallet::*;
-
 use crate::rita_common::network_endpoints::*;
 use crate::rita_exit::network_endpoints::*;
-
+use actix::registry::SystemService;
+use actix_web::http::Method;
+use actix_web::{http, server, App};
+use docopt::Docopt;
+use env_logger;
+use openssl_probe;
+use settings::exit::{RitaExitSettings, RitaExitSettingsStruct};
+#[cfg(not(test))]
+use settings::FileWrite;
+use settings::RitaCommonSettings;
 #[cfg(test)]
 use std::sync::Mutex;
+use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Deserialize, Default)]
 pub struct Args {
@@ -228,6 +241,7 @@ fn start_rita_exit_dashboard() {
     server::new(|| {
         App::new()
             .middleware(middleware::Headers)
+            .middleware(middleware::Auth)
             .route("/info", Method::GET, get_own_info)
             .route("/local_fee", Method::GET, get_local_fee)
             .route("/local_fee/{fee}", Method::POST, set_local_fee)
@@ -258,6 +272,7 @@ fn start_rita_exit_dashboard() {
             .route("/auto_price/enabled", Method::GET, auto_pricing_status)
             .route("/nickname/get/", Method::GET, get_nickname)
             .route("/nickname/set/", Method::POST, set_nickname)
+            .route("/router/password/", Method::POST, set_pass)
             .route("/crash_actors", Method::POST, crash_actors)
             .route("/usage/payments", Method::GET, get_payments)
     })
