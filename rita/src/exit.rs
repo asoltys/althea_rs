@@ -45,7 +45,6 @@ use settings::RitaCommonSettings;
 #[cfg(not(test))]
 use settings::FileWrite;
 
-pub mod actix_utils;
 mod middleware;
 mod rita_common;
 mod rita_exit;
