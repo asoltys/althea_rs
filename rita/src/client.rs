@@ -19,25 +19,14 @@ extern crate log;
 #[macro_use]
 extern crate serde_derive;
 
-extern crate arrayvec;
-
-use env_logger;
-
 use std::env;
 
 use openssl_probe;
 
-use docopt::Docopt;
 #[cfg(not(test))]
-use settings::FileWrite;
-
-use settings::client::{RitaClientSettings, RitaSettingsStruct};
-use settings::RitaCommonSettings;
-
 use actix_web::http::Method;
 use actix_web::{http, server, App};
-
-use std::sync::{Arc, RwLock};
+use docopt::Docopt;
 
 #[cfg(test)]
 #[macro_use]
@@ -75,17 +64,11 @@ use crate::rita_common::dashboard::settings::*;
 use crate::rita_common::dashboard::usage::*;
 use crate::rita_common::dashboard::wallet::*;
 use crate::rita_common::network_endpoints::*;
-use actix::registry::SystemService;
-use actix_web::http::Method;
-use actix_web::{http, server, App};
-use docopt::Docopt;
 use env_logger;
-use openssl_probe;
 use settings::client::{RitaClientSettings, RitaSettingsStruct};
 #[cfg(not(test))]
 use settings::FileWrite;
 use settings::RitaCommonSettings;
-use std::env;
 #[cfg(test)]
 use std::sync::Mutex;
 use std::sync::{Arc, RwLock};
